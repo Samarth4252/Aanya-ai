@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aanya – AI Companion</title>
+<style>
+body {
+  background:#0f172a;
+  color:white;
+  font-family: Arial;
+  text-align:center;
+  padding:20px;
+}
+button {
+  padding:15px 25px;
+  font-size:18px;
+  border-radius:30px;
+  border:none;
+  background:#ec4899;
+  color:white;
+}
+#chat {
+  margin-top:20px;
+  font-size:18px;
+  white-space:pre-line;
+}
+</style>
+</head>
+<body>
+
+<h2>💖 Aanya</h2>
+<p>Your AI Companion</p>
+
+<button onclick="talk()">🎤 Talk</button>
+
+<div id="chat"></div>
+
+<script>
+function talk(){
+  let rec = new webkitSpeechRecognition();
+  rec.lang = "en-IN";
+  rec.onresult = e => {
+    let user = e.results[0][0].transcript;
+    reply(user);
+  };
+  rec.start();
+}
+
+function reply(user){
+  let replies = [
+    "I’m always here for you ❤️",
+    "Tell me more, I’m listening 😊",
+    "You matter to me 💕",
+    "I like talking with you 🌸",
+    "You’re doing great 💖"
+  ];
+
+  let ai = replies[Math.floor(Math.random()*replies.length)];
+
+  document.getElementById("chat").innerText =
+    "You: " + user + "\nAanya: " + ai;
+
+  speak(ai);
+}
+
+function speak(text){
+  let msg = new SpeechSynthesisUtterance(text);
+  msg.pitch = 1.2;
+  msg.rate = 0.9;
+  speechSynthesis.speak(msg);
+}
+</script>
+
+</body>
+  </html>
