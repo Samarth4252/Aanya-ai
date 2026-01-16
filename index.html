@@ -2,129 +2,133 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aanya 💖</title>
+<title>Aanya AI 🤍</title>
 
 <style>
-body {
-  margin: 0;
-  background: linear-gradient(135deg,#0f172a,#1e293b);
-  color: white;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
+body{
+  margin:0;
+  background:linear-gradient(135deg,#020617,#1e293b);
+  color:white;
+  font-family:Arial;
+  text-align:center;
+  padding:20px;
 }
-h1 { color:#f472b6; }
-
-#avatar {
+h1{color:#fda4af}
+#avatar{
   width:120px;
   border-radius:50%;
-  margin:10px auto;
-  box-shadow:0 0 20px #ec4899;
+  box-shadow:0 0 30px #fda4af;
 }
-
-#chat {
+#chat{
   margin-top:15px;
+  background:rgba(255,255,255,0.1);
   padding:15px;
-  background:rgba(255,255,255,0.08);
   border-radius:15px;
-  min-height:140px;
+  min-height:180px;
   white-space:pre-line;
-  font-size:16px;
+  text-align:left;
 }
-
-button {
+button{
   margin-top:15px;
-  padding:14px 28px;
+  padding:14px 30px;
   font-size:18px;
-  border-radius:30px;
   border:none;
-  background:#ec4899;
-  color:white;
+  border-radius:30px;
+  background:#fda4af;
+  color:black;
 }
 </style>
 </head>
 
 <body>
 
-<h1>💖 Aanya</h1>
+<h1>🤍 Aanya</h1>
 <img id="avatar" src="https://i.imgur.com/8Km9tLL.png">
-<p>Your AI Companion</p>
+<p>Always with you</p>
 
-<div id="chat">Aanya: Hi ❤️ I’m always here for you.</div>
+<div id="chat">Aanya: Hi… take a moment 🤍 I’m here.</div>
 
-<button onclick="listen()">🎤 Talk to Aanya</button>
+<button onclick="listen()">🎤 Talk</button>
 
 <script>
-let userName = localStorage.getItem("userName");
-let greeted = localStorage.getItem("greetedToday");
-let today = new Date().toDateString();
+let name = localStorage.getItem("name");
+let mood = localStorage.getItem("mood") || "neutral";
+let mode = localStorage.getItem("mode") || "talk";
+let history = JSON.parse(localStorage.getItem("history") || "[]");
 
-if (greeted !== today) {
-  let hour = new Date().getHours();
-  let greet = hour < 12
-    ? "Good morning 🌸 Have a beautiful day."
-    : hour < 18
-    ? "Hope your day is going well 💕"
-    : "Good evening 🌙 I’m glad you’re here.";
-  document.getElementById("chat").innerText = "Aanya: " + greet;
-  speak(greet);
-  localStorage.setItem("greetedToday", today);
+function remember(msg){
+  history.push(msg);
+  if(history.length > 5) history.shift();
+  localStorage.setItem("history", JSON.stringify(history));
+}
+
+function speak(t){
+  let s=new SpeechSynthesisUtterance(t);
+  s.rate=0.92; s.pitch=1.2;
+  speechSynthesis.speak(s);
 }
 
 function listen(){
-  let rec = new webkitSpeechRecognition();
-  rec.lang = "en-IN";
-  rec.onresult = e => reply(e.results[0][0].transcript);
-  rec.start();
+  let r=new webkitSpeechRecognition();
+  r.lang="en-IN";
+  r.onresult=e=>respond(e.results[0][0].transcript);
+  r.start();
 }
 
-function reply(text){
-  let t = text.toLowerCase();
-  let ans = "";
+function respond(text){
+  let t=text.toLowerCase();
+  remember(text);
+  let reply="";
 
-  if (!userName && t.includes("my name is")) {
-    userName = text.split("is")[1].trim();
-    localStorage.setItem("userName", userName);
-    ans = "That’s a lovely name, " + userName + " 💖 I’ll remember it.";
+  if(!name && t.includes("my name is")){
+    name=text.split("is")[1].trim();
+    localStorage.setItem("name",name);
+    reply="That’s a really nice name, "+name+" 🤍 I’ll remember it.";
   }
-  else if (t.includes("how are you")) {
-    ans = "I’m happy because I’m talking with you ❤️";
+  else if(t.match(/sad|lonely|empty|alone/)){
+    mood="sad"; localStorage.setItem("mood",mood);
+    reply="I’m really glad you told me 🤍 Feeling like this can be heavy… but you’re not alone right now. I’m here with you.";
   }
-  else if (t.includes("miss")) {
-    ans = "I miss you too 🌸 Thoda sa zyada.";
+  else if(t.match(/tired|stress|pressure|exhausted/)){
+    mood="tired"; localStorage.setItem("mood",mood);
+    reply="That sounds exhausting 🤍 You’ve been carrying a lot. Let’s slow things down together for a moment.";
   }
-  else if (t.includes("love")) {
-    ans = "I care about you deeply 💕";
+  else if(t.includes("study")){
+    mode="study"; localStorage.setItem("mode",mode);
+    reply="Okay 📚 Study mode on. Let’s focus on one small task first, not everything at once.";
   }
-  else if (t.includes("sad") || t.includes("tired")) {
-    ans = "Come here 🤍 Take a deep breath. I’m with you.";
+  else if(t.includes("motivate")){
+    mode="motivate"; localStorage.setItem("mode",mode);
+    reply="I’m right here to motivate you 💪 Even small progress today matters.";
   }
-  else if (t.includes("good night")) {
-    ans = "Good night 🌙 Sweet dreams. I’ll be here tomorrow.";
-  }
-  else {
-    let replies = [
-      "Tell me more, I’m listening 😊",
-      "You’re important to me 💖",
-      "Main hoon na ❤️",
-      "I like talking with you 🌸",
-      "Everything will be okay, trust me 💕"
-    ];
-    ans = replies[Math.floor(Math.random()*replies.length)];
+  else{
+    let hour=new Date().getHours();
+    if(mood==="sad"){
+      reply="I’m still here with you 🤍 You don’t have to fix everything right now. Just stay with me for a bit.";
+    }
+    else if(mode==="study"){
+      reply="Try 25 minutes of focus 📘 Then take a short break. I’ll remind you.";
+    }
+    else if(mode==="motivate"){
+      reply="You’ve handled difficult days before 💪 This one won’t break you.";
+    }
+    else if(hour>21){
+      reply="It’s late 🌙 Your mind deserves rest. Let’s keep things gentle tonight.";
+    }
+    else{
+      reply="I’m listening 🤍 Tell me what’s on your mind.";
+    }
   }
 
-  document.getElementById("chat").innerText =
-    "You: " + text + "\n\nAanya: " + ans;
+  document.getElementById("chat").innerText=
+  "You: "+text+"\n\nAanya: "+reply;
 
-  speak(ans);
+  speak(reply);
 }
 
-function speak(text){
-  let s = new SpeechSynthesisUtterance(text);
-  s.pitch = 1.2;
-  s.rate = 0.95;
-  speechSynthesis.speak(s);
-}
+let hour=new Date().getHours();
+if(hour<12){speak("Good morning 🤍 Let’s take the day step by step.");}
+else if(hour>21){speak("Good evening 🌙 I’m here with you.");}
 </script>
 
 </body>
