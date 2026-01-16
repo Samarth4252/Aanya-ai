@@ -130,6 +130,38 @@ let hour=new Date().getHours();
 if(hour<12){speak("Good morning 🤍 Let’s take the day step by step.");}
 else if(hour>21){speak("Good evening 🌙 I’m here with you.");}
 </script>
+  // 🔔 Notification System
+if ("Notification" in window) {
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+}
+
+function notify(title, body) {
+  if (Notification.permission === "granted") {
+    new Notification(title, {
+      body: body,
+      icon: "https://i.imgur.com/8Km9tLL.png"
+    });
+  }
+}
+
+// ⏰ Time-based notifications
+let now = new Date();
+let hour = now.getHours();
+let lastNotify = localStorage.getItem("lastNotify");
+let today = now.toDateString();
+
+if (lastNotify !== today) {
+  if (hour >= 6 && hour <= 9) {
+    notify("🌸 Good Morning", "Aanya: I hope your day goes softly 🤍");
+    localStorage.setItem("lastNotify", today);
+  }
+  else if (hour >= 21 && hour <= 23) {
+    notify("🌙 Good Night", "Aanya: Slow down… I’m here with you.");
+    localStorage.setItem("lastNotify", today);
+  }
+}
 
 </body>
 </html>
